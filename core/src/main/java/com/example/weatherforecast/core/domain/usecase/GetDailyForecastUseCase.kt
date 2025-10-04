@@ -6,11 +6,11 @@ import com.example.weatherforecast.core.model.TodayForecast
 import com.example.weatherforecast.core.network.model.OneCallResponse
 import javax.inject.Inject
 
-class GetCurrentForecastUseCase @Inject constructor(private val repo: WeatherRepository) {
-    suspend operator fun invoke(cityId: String): TodayForecast {
+class GetDailyForecastUseCase @Inject constructor(private val repo: WeatherRepository) {
+    suspend operator fun invoke(cityId: String): List<DailyForecast?> {
         val cities = repo.getCities()
         return cities.firstOrNull { it.id == cityId }?.let {
-            repo.getCurrentWeather(it)
+            repo.getDailyWeather(it)
         }?:  error("Unknown cityId: $cityId")
     }
 }

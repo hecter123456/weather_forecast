@@ -1,122 +1,116 @@
 package com.example.weatherforecast.core.network.model
 
-data class OneCallResponse(
-    var alerts: List<Alert?>,
-    var current: Current,
-    var daily: List<Daily?>,
-    var hourly: List<Hourly?>,
-    var lat: Double,
-    var lon: Double,
-    var minutely: List<Minutely?>,
-    var timezone: String,
-    var timezone_offset: Int
-) {
-    data class Alert(
-        var description: String,
-        var end: Int,
-        var event: String,
-        var sender_name: String,
-        var start: Int,
-        var tags: List<Any?>
-    )
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 
-    data class Current(
-        var clouds: Int,
-        var dew_point: Double,
-        var dt: Int,
-        var feels_like: Double,
-        var humidity: Int,
-        var pressure: Int,
-        var sunrise: Int,
-        var sunset: Int,
-        var temp: Double,
-        var uvi: Double,
-        var visibility: Int,
-        var weather: List<Weather>,
-        var wind_deg: Int,
-        var wind_gust: Double,
-        var wind_speed: Double
-    ) {
-        data class Weather(
-            var description: String,
-            var icon: String,
-            var id: Int,
-            var main: String
-        )
-    }
+@Serializable
+data class OneCallResponse (
+    val lat: Double,
+    val lon: Double,
+    val timezone: String,
 
-    data class Daily(
-        var clouds: Int,
-        var dew_point: Double,
-        var dt: Int,
-        var feels_like: FeelsLike,
-        var humidity: Int,
-        var moon_phase: Double,
-        var moonrise: Int,
-        var moonset: Int,
-        var pop: Double,
-        var pressure: Int,
-        var rain: Double,
-        var summary: String,
-        var sunrise: Int,
-        var sunset: Int,
-        var temp: Temp,
-        var uvi: Double,
-        var weather: List<Weather>,
-        var wind_deg: Int,
-        var wind_gust: Double,
-        var wind_speed: Double
-    ) {
-        data class FeelsLike(
-            var day: Double,
-            var eve: Double,
-            var morn: Double,
-            var night: Double
-        )
+    @SerialName("timezone_offset")
+    val timezoneOffset: Long,
 
-        data class Temp(
-            var day: Double,
-            var eve: Double,
-            var max: Double,
-            var min: Double,
-            var morn: Double,
-            var night: Double
-        )
+    val current: Current,
+    val daily: List<Daily>
+)
 
-        data class Weather(
-            var description: String,
-            var icon: String,
-            var id: Int,
-            var main: String
-        )
-    }
+@Serializable
+data class Current (
+    val dt: Long,
+    val sunrise: Long,
+    val sunset: Long,
+    val temp: Double,
 
-    data class Hourly(
-        var clouds: Int,
-        var dew_point: Double,
-        var dt: Int,
-        var feels_like: Double,
-        var humidity: Int,
-        var pop: Double,
-        var pressure: Int,
-        var temp: Double,
-        var uvi: Int,
-        var visibility: Int,
-        var weather: List<Weather>,
-        var wind_deg: Int,
-        var wind_gust: Double,
-        var wind_speed: Double
-    ) {
-        data class Weather(
-            var description: String,
-            var icon: String,
-            var id: Int,
-            var main: String
-        )
-    }
+    @SerialName("feels_like")
+    val feelsLike: Double,
 
-    data class Minutely(
-        var dt: Int,
-        var precipitation: Int
-    )
-}
+    val pressure: Long,
+    val humidity: Long,
+
+    @SerialName("dew_point")
+    val dewPoint: Double,
+
+    val uvi: Long,
+    val clouds: Long,
+    val visibility: Long,
+
+    @SerialName("wind_speed")
+    val windSpeed: Double,
+
+    @SerialName("wind_deg")
+    val windDeg: Long,
+
+    @SerialName("wind_gust")
+    val windGust: Double,
+
+    val weather: List<Weather>
+)
+
+@Serializable
+data class Weather (
+    val id: Long,
+    val main: String,
+    val description: String,
+    val icon: String
+)
+
+@Serializable
+data class Daily (
+    val dt: Long,
+    val sunrise: Long,
+    val sunset: Long,
+    val moonrise: Long,
+    val moonset: Long,
+
+    @SerialName("moon_phase")
+    val moonPhase: Double,
+
+    val summary: String,
+    val temp: Temp,
+
+    @SerialName("feels_like")
+    val feelsLike: FeelsLike,
+
+    val pressure: Long,
+    val humidity: Long,
+
+    @SerialName("dew_point")
+    val dewPoint: Double,
+
+    @SerialName("wind_speed")
+    val windSpeed: Double,
+
+    @SerialName("wind_deg")
+    val windDeg: Long,
+
+    @SerialName("wind_gust")
+    val windGust: Double,
+
+    val weather: List<Weather>,
+    val clouds: Long,
+    val pop: Double,
+    val uvi: Double,
+    val rain: Double? = null
+)
+
+@Serializable
+data class FeelsLike (
+    val day: Double,
+    val night: Double,
+    val eve: Double,
+    val morn: Double
+)
+
+@Serializable
+data class Temp (
+    val day: Double,
+    val min: Double,
+    val max: Double,
+    val night: Double,
+    val eve: Double,
+    val morn: Double
+)

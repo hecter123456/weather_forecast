@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface OpenWeatherApi {
     // One Call (2.5): current + daily. Requires API key.
-    @GET("data/2.5/onecall")
+    @GET("data/3.0/onecall")
     suspend fun oneCall(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,

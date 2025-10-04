@@ -15,6 +15,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -22,7 +23,6 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val BASE_URL = "https://api.openweathermap.org/"
-    private const val API_KEY = "7ea9d9be41951166ceb28a81f215f882"
 
     @Provides
     @Singleton
@@ -34,7 +34,9 @@ object NetworkModule {
     @Singleton
     fun provideJson(): Json = Json { ignoreUnknownKeys = true }
 
-    @Provides @Singleton fun provideRetrofit(client: OkHttpClient, json: Json): Retrofit = Retrofit.Builder()
+    @Provides
+    @Singleton
+    fun provideRetrofit(client: OkHttpClient, json: Json): Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(client)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
@@ -46,9 +48,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideDataSource(api: OpenWeatherApi): WeatherNetworkDataSource = WeatherNetworkDataSourceImpl(api,
-        API_KEY
-    )
+    fun provideDataSource(
+        api: OpenWeatherApi,
+        @Named("owmApiKey") apiKey: String
+    ): WeatherNetworkDataSource = WeatherNetworkDataSourceImpl(api, apiKey)
 
     @Provides
     @Singleton
