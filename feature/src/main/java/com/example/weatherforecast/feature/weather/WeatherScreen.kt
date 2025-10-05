@@ -1,10 +1,28 @@
 package com.example.weatherforecast.feature.weather
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -12,15 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = hiltViewModel()) {
     var tabIndex by remember { mutableStateOf(0) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val cityId by viewModel.cityId.collectAsStateWithLifecycle()
+    val city by viewModel.city.collectAsStateWithLifecycle()
 
-    LaunchedEffect(tabIndex, cityId) {
+    LaunchedEffect(tabIndex, city) {
         if (tabIndex == 0) viewModel.loadToday() else viewModel.loadWeek()
     }
 
@@ -31,12 +51,25 @@ fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = h
         }
 
         when (uiState) {
-            WeatherUiState.Idle, WeatherUiState.Loading -> Box(Modifier.fillMaxWidth().padding(24.dp)) { CircularProgressIndicator() }
+            WeatherUiState.Idle, WeatherUiState.Loading -> Box(Modifier
+                .fillMaxWidth()
+                .padding(24.dp)) { CircularProgressIndicator() }
             is WeatherUiState.Error -> Text("Error: ${(uiState as WeatherUiState.Error).message}", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
             is WeatherUiState.Today -> TodayContent((uiState as WeatherUiState.Today))
             is WeatherUiState.Week -> WeekContent((uiState as WeatherUiState.Week))
         }
+
+        FloatingActionButton(
+            onClick = { viewModel.saveCurrentToFavorites() },
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(16.dp)
+        ) {
+            Text("★")
+        }
     }
+
+
 }
 
 @Composable
