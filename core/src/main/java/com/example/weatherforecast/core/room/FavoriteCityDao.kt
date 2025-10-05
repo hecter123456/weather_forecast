@@ -22,11 +22,11 @@ interface FavoriteCityDao {
 
     @Query(
         """
-        SELECT COUNT(*) FROM favorite_cities
-        WHERE LOWER(name) = LOWER(:name)
-          AND COALESCE(LOWER(country), '') = COALESCE(LOWER(:country), '')
-          AND COALESCE(LOWER(state),   '') = COALESCE(LOWER(:state),   '')
-    """
+            SELECT COUNT(*) FROM favorite_cities
+            WHERE LOWER(name) = LOWER(:name)
+            AND COALESCE(LOWER(country), '') = COALESCE(LOWER(:country), '')
+            AND COALESCE(LOWER(state),   '') = COALESCE(LOWER(:state),   '')
+"""
     )
     fun countByIdentity(
         name: String,
@@ -38,8 +38,8 @@ interface FavoriteCityDao {
         """
         DELETE FROM favorite_cities
         WHERE LOWER(name) = LOWER(:name)
-          AND COALESCE(LOWER(country), '') = COALESCE(LOWER(:country), '')
-          AND COALESCE(LOWER(state),   '') = COALESCE(LOWER(:state),   '')
+        AND COALESCE(LOWER(country), '') = COALESCE(LOWER(:country), '')
+        AND COALESCE(LOWER(state),   '') = COALESCE(LOWER(:state),   '')
     """
     )
     suspend fun deleteByIdentity(

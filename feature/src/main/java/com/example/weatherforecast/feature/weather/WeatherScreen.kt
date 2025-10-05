@@ -46,14 +46,31 @@ fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = h
     val city by viewModel.city.collectAsStateWithLifecycle()
     val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
 
-    LaunchedEffect(tabIndex, city) {
-        if (tabIndex == 0) viewModel.loadToday() else viewModel.loadWeek()
+    LaunchedEffect(city, tabIndex) {
+        viewModel.city.collect {
+            if (tabIndex == 0) viewModel.loadToday() else viewModel.loadWeek()
+            viewModel.startObservingFavoriteByIdentity()
+        }
+
     }
 
     Column(modifier) {
         TabRow(selectedTabIndex = tabIndex) {
             Tab(selected = tabIndex == 0, onClick = { tabIndex = 0 }, text = { Text("Today") })
             Tab(selected = tabIndex == 1, onClick = { tabIndex = 1 }, text = { Text("This Week") })
+        }
+
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ElevatedCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("City: ${city.name}")
+                    Text("Country: ${city.country}")
+                    Text("State: ${city.state}")
+                    Text("Lat: ${city.lat}")
+                    Text("Lon: ${city.lon}")
+                    Text("isFavorite: $isFavorite")
+                }
+            }
         }
 
         when (uiState) {

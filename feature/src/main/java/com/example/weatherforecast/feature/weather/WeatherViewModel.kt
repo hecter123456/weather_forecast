@@ -14,6 +14,7 @@ import com.example.weatherforecast.core.domain.usecase.ReverseGeocodeUseCase
 import com.example.weatherforecast.core.model.LocalData
 import com.example.weatherforecast.core.model.SearchCity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -35,28 +36,26 @@ class WeatherViewModel @Inject constructor(
 ) : ViewModel() {
 
     val city: StateFlow<SearchCity> =
-        observeSelectedCityUseCase()              // Flow<SearchCity?>
-            .stateIn(                             // 再升級成 StateFlow
+        observeSelectedCityUseCase()
+            .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = LocalData.DefaultCity
             )
-
-    val isFavorite: StateFlow<Boolean> =
-        observeIsFavoriteByIdentity(city.value).stateIn(                             // 再升級成 StateFlow
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = false
-        )
-    private val _coordinates = MutableStateFlow<Pair<Double, Double>?>(null)
-    val coordinates: StateFlow<Pair<Double, Double>?> = _coordinates
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite
 
     private val _uiState = MutableStateFlow<WeatherUiState>(WeatherUiState.Idle)
     val uiState: StateFlow<WeatherUiState> = _uiState
 
-    private fun updateTitleFromReverseGeocode(lat: Double, lon: Double) {
-        viewModelScope.launch {
-            val result = runCatching { reverseGeocode(lat, lon).firstOrNull()?.name }.getOrNull()
+    private var favoriteObserveJob: Job? = null
+
+    fun startObservingFavoriteByIdentity() {
+        favoriteObserveJob?.cancel()
+        favoriteObserveJob = viewModelScope.launch {
+            val identity = city.value ?: return@launch
+            observeIsFavoriteByIdentity(identity)
+                .collect { _isFavorite.value = it }
         }
     }
 
@@ -64,8 +63,7 @@ class WeatherViewModel @Inject constructor(
         _uiState.value = WeatherUiState.Loading
         viewModelScope.launch {
             runCatching {
-                coordinates.value?.let { (lat, lon) -> getTodayAt(lat, lon) }
-                    ?: getToday(city.value)
+                getToday(city.value)
             }
                 .onSuccess { today ->
                     _uiState.value = WeatherUiState.Today(today)
@@ -77,7 +75,7 @@ class WeatherViewModel @Inject constructor(
         _uiState.value = WeatherUiState.Loading
         viewModelScope.launch {
             runCatching {
-                coordinates.value?.let { (lat, lon) -> getWeekAt(lat, lon) } ?: getWeek(city.value)
+                getWeek(city.value)
             }
                 .onSuccess { _uiState.value = WeatherUiState.Week(it) }
                 .onFailure { _uiState.value = WeatherUiState.Error(it.message ?: "Unknown error") }
@@ -88,7 +86,7 @@ class WeatherViewModel @Inject constructor(
         viewModelScope.launch {
             val identity = city.value ?: return@launch
             if (isFavorite.value) {
-                removeFavoriteByIdentity(city.value)
+                removeFavoriteByIdentity(identity)
             } else {
                 addFavorite(identity) // 直接把 SearchCity 存進 favorites（包含 country/state）
             }
