@@ -1,9 +1,7 @@
 package com.example.weatherforecast.core.network.model
 
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class OneCallResponse (
@@ -34,7 +32,7 @@ data class Current (
     @SerialName("dew_point")
     val dewPoint: Double,
 
-    val uvi: Long,
+    val uvi: Double,
     val clouds: Long,
     val visibility: Long,
 
