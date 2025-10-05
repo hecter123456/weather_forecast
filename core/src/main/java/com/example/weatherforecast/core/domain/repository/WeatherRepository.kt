@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepository {
     suspend fun getCities(): List<City>
-    suspend fun getCurrentWeather(city: City): TodayForecast
+    suspend fun getCurrentWeather(city: SearchCity): TodayForecast
 
-    suspend fun getDailyWeather(city: City): List<DailyForecast?>
+    suspend fun getDailyWeather(city: SearchCity): List<DailyForecast?>
 
     // Geocoding
     suspend fun searchCities(query: String, limit: Int = 10): List<SearchCity>
@@ -23,5 +23,9 @@ interface WeatherRepository {
     suspend fun addFavorite(item: SearchCity, alias: String? = null, note: String? = null): Long
     suspend fun removeFavorite(id: Long)
     suspend fun updateFavorite(id: Long, alias: String?, note: String?)
+
+    // Selected City via DataStore
+    fun observeSelectedCity(): Flow<SearchCity>
+    suspend fun saveSelectedCity(city: SearchCity)
 
 }

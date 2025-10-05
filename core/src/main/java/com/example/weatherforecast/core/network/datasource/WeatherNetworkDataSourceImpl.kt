@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class WeatherNetworkDataSourceImpl @Inject constructor(
     private val api: OpenWeatherApi,
-    private val apiKey: String
+    private val apiKey: String,
 ) : WeatherNetworkDataSource {
 
     override suspend fun fetchOneCall(request: OneCallRequest): OneCallResponse =

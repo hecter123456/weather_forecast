@@ -1,5 +1,6 @@
 package com.example.weatherforecast.core.di
 
+import com.example.weatherforecast.core.datastore.datasource.PreferencesDataSource
 import com.example.weatherforecast.core.domain.repository.WeatherRepository
 import com.example.weatherforecast.core.domain.repository.WeatherRepositoryImpl
 import com.example.weatherforecast.core.network.datasource.WeatherNetworkDataSource
@@ -58,7 +59,12 @@ object NetworkModule {
     @Singleton
     fun provideRepository(
         datasource: WeatherNetworkDataSource,
-        dao: FavoriteCityDao
+        dao: FavoriteCityDao,
+        preferencesDataSource: PreferencesDataSource
     ): WeatherRepository =
-        WeatherRepositoryImpl(datasource, dao)
+        WeatherRepositoryImpl(
+            datasource = datasource,
+            favoriteCityDao = dao,
+            preferencesDataSource = preferencesDataSource
+        )
 }

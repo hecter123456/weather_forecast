@@ -1,5 +1,7 @@
 package com.example.weatherforecast.core.domain.repository
 
+import com.example.weatherforecast.core.datastore.datasource.PreferencesDataSource
+import com.example.weatherforecast.core.di.ApplicationScope
 import com.example.weatherforecast.core.model.City
 import com.example.weatherforecast.core.model.DailyForecast
 import com.example.weatherforecast.core.model.FavoriteCity
@@ -18,18 +20,19 @@ import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
     private val datasource: WeatherNetworkDataSource,
-    private val favoriteCityDao: FavoriteCityDao
+    private val favoriteCityDao: FavoriteCityDao,
+    @ApplicationScope private val preferencesDataSource: PreferencesDataSource
 ) : WeatherRepository {
     override suspend fun getCities(): List<City> {
         return LocalData.cities
     }
 
-    override suspend fun getCurrentWeather(city: City): TodayForecast {
+    override suspend fun getCurrentWeather(city: SearchCity): TodayForecast {
         return datasource.fetchOneCall(request = OneCallRequest(lat = city.lat, lon = city.lon))
             .toToday(city)
     }
 
-    override suspend fun getDailyWeather(city: City): List<DailyForecast?> {
+    override suspend fun getDailyWeather(city: SearchCity): List<DailyForecast?> {
         return datasource.fetchOneCall(request = OneCallRequest(lat = city.lat, lon = city.lon))
             .toWeek()
     }
@@ -54,8 +57,16 @@ class WeatherRepositoryImpl @Inject constructor(
     override suspend fun updateFavorite(id: Long, alias: String?, note: String?) =
         favoriteCityDao.updateFields(id, alias, note, System.currentTimeMillis())
 
+    override fun observeSelectedCity(): Flow<SearchCity> {
+        return preferencesDataSource.observeSelectedCity()
+    }
 
-    fun OneCallResponse.toToday(city: City) = TodayForecast(
+    override suspend fun saveSelectedCity(city: SearchCity) {
+        return preferencesDataSource.saveSelectedCity(city)
+    }
+
+
+    fun OneCallResponse.toToday(city: SearchCity) = TodayForecast(
         cityName = city.name,
         dateEpochSeconds = current.dt,
         temperatureC = current.temp,

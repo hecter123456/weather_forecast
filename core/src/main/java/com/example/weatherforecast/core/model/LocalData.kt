@@ -8,4 +8,12 @@ object LocalData {
         City("tch","Taichung", 24.147736, 120.673648),
         City("khn","Kaohsiung", 22.627278, 120.301435),
     )
+
+    val DefaultCity = SearchCity(
+        name = "Taipei",
+        country = "TW",
+        state = null,
+        lat = 25.0330,
+        lon = 121.5654
+    )
 }
