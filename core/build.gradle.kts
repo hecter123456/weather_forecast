@@ -19,9 +19,9 @@ val openWeatherKey = (localProps.getProperty("OPENWEATHER_API_KEY")
 
 android {
     namespace = "com.example.weatherforecast.core"
-    compileSdk = 36
+    compileSdk = (project.findProperty("ANDROID_COMPILE_SDK") as String).toInt()
     defaultConfig {
-        // 將 key 暴露成 BuildConfig 常數
+        // BuildConfig constant read by Hilt via @Named("owmApiKey")
         buildConfigField("String", "OPENWEATHER_API_KEY", "\"$openWeatherKey\"")
     }
 
@@ -32,16 +32,16 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-
+    //hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-
+    //retrofit
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.kotlin.serialization)
-
+    //kotlin serialization
     implementation(libs.kotlinx.serialization.json)
+    // http logging
     implementation(libs.okhttp.logging)
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -5,8 +5,6 @@ import com.example.weatherforecast.core.model.DailyForecast
 import com.example.weatherforecast.core.model.LocalData
 import com.example.weatherforecast.core.model.TodayForecast
 import com.example.weatherforecast.core.network.datasource.WeatherNetworkDataSource
-import com.example.weatherforecast.core.network.datasource.WeatherNetworkDataSourceImpl
-import com.example.weatherforecast.core.network.model.OneCallResponse
 import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
@@ -31,14 +29,12 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override suspend fun getDailyWeather(city: City): List<DailyForecast?> {
         return datasource.fetchOneCall(city = city).daily.map {
-            it?.let {
-                DailyForecast(
-                    dateEpochSeconds = it.dt,
-                    minTempC = it.temp.min,
-                    maxTempC = it.temp.max,
-                    condition = it.weather.first().description,
-                )
-            }
+            DailyForecast(
+                dateEpochSeconds = it.dt,
+                minTempC = it.temp.min,
+                maxTempC = it.temp.max,
+                condition = it.weather.first().description,
+            )
         }
     }
 
