@@ -2,8 +2,6 @@ package com.example.weatherforecast.core.domain.usecase
 
 import com.example.weatherforecast.core.domain.repository.WeatherRepository
 import com.example.weatherforecast.core.model.DailyForecast
-import com.example.weatherforecast.core.model.TodayForecast
-import com.example.weatherforecast.core.network.model.OneCallResponse
 import javax.inject.Inject
 
 class GetDailyForecastUseCase @Inject constructor(private val repo: WeatherRepository) {

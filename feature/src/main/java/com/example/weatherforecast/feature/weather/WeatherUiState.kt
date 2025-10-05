@@ -2,7 +2,6 @@ package com.example.weatherforecast.feature.weather
 
 import com.example.weatherforecast.core.model.DailyForecast
 import com.example.weatherforecast.core.model.TodayForecast
-import com.example.weatherforecast.core.network.model.OneCallResponse
 
 sealed interface WeatherUiState {
     data object Idle : WeatherUiState

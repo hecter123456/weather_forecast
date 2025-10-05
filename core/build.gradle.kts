@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias { libs.plugins.kotlin.kapt }
     alias { libs.plugins.kotlin.serialization }
+    alias(libs.plugins.room)
 //    id("kotlinx-serialization")
 }
 
@@ -25,6 +26,10 @@ android {
         buildConfigField("String", "OPENWEATHER_API_KEY", "\"$openWeatherKey\"")
     }
 
+    room {
+        schemaDirectory("$projectDir/schemas") // Specify the directory for schema files
+    }
+
     android.buildFeatures.buildConfig = true
 }
 
@@ -42,6 +47,12 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // http logging
     implementation(libs.okhttp.logging)
+    //room
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
+    //datastore
+    implementation(libs.androidx.dataStore.preference)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

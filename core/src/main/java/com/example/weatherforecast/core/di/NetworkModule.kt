@@ -5,6 +5,7 @@ import com.example.weatherforecast.core.domain.repository.WeatherRepositoryImpl
 import com.example.weatherforecast.core.network.datasource.WeatherNetworkDataSource
 import com.example.weatherforecast.core.network.datasource.WeatherNetworkDataSourceImpl
 import com.example.weatherforecast.core.network.retrofit.OpenWeatherApi
+import com.example.weatherforecast.core.room.FavoriteCityDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,6 +56,9 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRepository(datasource: WeatherNetworkDataSource): WeatherRepository =
-        WeatherRepositoryImpl(datasource)
+    fun provideRepository(
+        datasource: WeatherNetworkDataSource,
+        dao: FavoriteCityDao
+    ): WeatherRepository =
+        WeatherRepositoryImpl(datasource, dao)
 }
