@@ -57,6 +57,14 @@ class WeatherRepositoryImpl @Inject constructor(
     override suspend fun updateFavorite(id: Long, alias: String?, note: String?) =
         favoriteCityDao.updateFields(id, alias, note, System.currentTimeMillis())
 
+    override fun observeIsFavorite(city: SearchCity): Flow<Boolean> {
+        return favoriteCityDao.countByIdentity(city.name, city.country, city.state).map { it > 0 }
+    }
+
+    override suspend fun removeFavorite(city: SearchCity) {
+        favoriteCityDao.deleteByIdentity(city.name, city.country, city.state)
+    }
+
     override fun observeSelectedCity(): Flow<SearchCity> {
         return preferencesDataSource.observeSelectedCity()
     }

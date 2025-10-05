@@ -76,7 +76,7 @@ fun FavoritesScreen(
         )
     }
 
-    Column(Modifier.padding(16.dp)) {
+    Column(modifier.padding(16.dp)) {
         if (favorites.isEmpty()) {
             Text("No favorites yet. Save a location from the Forecast screen.")
         } else {

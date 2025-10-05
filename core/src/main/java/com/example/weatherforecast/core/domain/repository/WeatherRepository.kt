@@ -24,6 +24,9 @@ interface WeatherRepository {
     suspend fun removeFavorite(id: Long)
     suspend fun updateFavorite(id: Long, alias: String?, note: String?)
 
+    fun observeIsFavorite(city: SearchCity): Flow<Boolean>
+    suspend fun removeFavorite(city: SearchCity)
+
     // Selected City via DataStore
     fun observeSelectedCity(): Flow<SearchCity>
     suspend fun saveSelectedCity(city: SearchCity)

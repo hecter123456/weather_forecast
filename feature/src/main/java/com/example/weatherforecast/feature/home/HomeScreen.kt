@@ -29,7 +29,6 @@ import com.example.weatherforecast.feature.weather.WeatherScreen
 
 object Routes {
     const val Forecast = "forecast"
-    const val Cities = "cities"
     const val Search = "search"
     const val Favorites = "favorites"
 }
@@ -53,7 +52,6 @@ fun HomeScreen() {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 inclusive = false
                             }
-                            launchSingleTop = true
                         }
                     }
                 }
@@ -63,7 +61,6 @@ fun HomeScreen() {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 inclusive = false
                             }
-                            launchSingleTop = true
                         }
                     }
                 }

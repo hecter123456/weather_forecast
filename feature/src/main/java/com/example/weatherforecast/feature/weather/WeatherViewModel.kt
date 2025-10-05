@@ -7,7 +7,9 @@ import com.example.weatherforecast.core.domain.usecase.GetCurrentForecastUseCase
 import com.example.weatherforecast.core.domain.usecase.GetDailyForecastUseCase
 import com.example.weatherforecast.core.domain.usecase.GetTodayForecastByCoordinatesUseCase
 import com.example.weatherforecast.core.domain.usecase.GetWeekForecastByCoordinatesUseCase
+import com.example.weatherforecast.core.domain.usecase.ObserveIsFavoriteByIdentityUseCase
 import com.example.weatherforecast.core.domain.usecase.ObserveSelectedCityUseCase
+import com.example.weatherforecast.core.domain.usecase.RemoveFavoriteByIdentityUseCase
 import com.example.weatherforecast.core.domain.usecase.ReverseGeocodeUseCase
 import com.example.weatherforecast.core.model.LocalData
 import com.example.weatherforecast.core.model.SearchCity
@@ -27,6 +29,8 @@ class WeatherViewModel @Inject constructor(
     private val getWeekAt: GetWeekForecastByCoordinatesUseCase,
     private val reverseGeocode: ReverseGeocodeUseCase,
     private val addFavorite: AddFavoriteUseCase,
+    private val observeIsFavoriteByIdentity: ObserveIsFavoriteByIdentityUseCase,
+    private val removeFavoriteByIdentity: RemoveFavoriteByIdentityUseCase,
     observeSelectedCityUseCase: ObserveSelectedCityUseCase
 ) : ViewModel() {
 
@@ -38,6 +42,12 @@ class WeatherViewModel @Inject constructor(
                 initialValue = LocalData.DefaultCity
             )
 
+    val isFavorite: StateFlow<Boolean> =
+        observeIsFavoriteByIdentity(city.value).stateIn(                             // 再升級成 StateFlow
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false
+        )
     private val _coordinates = MutableStateFlow<Pair<Double, Double>?>(null)
     val coordinates: StateFlow<Pair<Double, Double>?> = _coordinates
 
@@ -74,10 +84,14 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    fun saveCurrentToFavorites(customAlias: String? = null, customNote: String? = null) {
+    fun toggleFavorite() {
         viewModelScope.launch {
-            val searchCity = city.value
-            addFavorite(searchCity, alias = customAlias, note = customNote)
+            val identity = city.value ?: return@launch
+            if (isFavorite.value) {
+                removeFavoriteByIdentity(city.value)
+            } else {
+                addFavorite(identity) // 直接把 SearchCity 存進 favorites（包含 country/state）
+            }
         }
     }
 }

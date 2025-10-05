@@ -5,14 +5,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -39,6 +44,7 @@ fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = h
     var tabIndex by remember { mutableStateOf(0) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val city by viewModel.city.collectAsStateWithLifecycle()
+    val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
 
     LaunchedEffect(tabIndex, city) {
         if (tabIndex == 0) viewModel.loadToday() else viewModel.loadWeek()
@@ -59,13 +65,26 @@ fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = h
             is WeatherUiState.Week -> WeekContent((uiState as WeatherUiState.Week))
         }
 
-        FloatingActionButton(
-            onClick = { viewModel.saveCurrentToFavorites() },
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(16.dp)
-        ) {
-            Text("★")
+        Box(Modifier.fillMaxSize()) {
+            FloatingActionButton(
+                onClick = { viewModel.toggleFavorite() },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                containerColor = if (isFavorite)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = if (isFavorite)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSurfaceVariant
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites"
+                )
+            }
         }
     }
 
