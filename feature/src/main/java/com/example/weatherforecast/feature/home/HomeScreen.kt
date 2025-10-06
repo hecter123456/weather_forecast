@@ -78,7 +78,7 @@ private fun BottomBar(navController: NavHostController) {
             selected = current == Routes.Forecast,
             onClick = {
                 navController.navigate(Routes.Forecast) {
-                    popUpTo(navController.graph.findStartDestination().id); launchSingleTop = true
+                    popUpTo(navController.graph.findStartDestination().id)
                 }
             },
             icon = { Icon(Icons.Default.Cloud, contentDescription = null) },
@@ -88,7 +88,7 @@ private fun BottomBar(navController: NavHostController) {
             selected = current == Routes.Search,
             onClick = {
                 navController.navigate(Routes.Search) {
-                    popUpTo(navController.graph.findStartDestination().id); launchSingleTop = true
+                    popUpTo(navController.graph.findStartDestination().id)
                 }
             },
             icon = { Icon(Icons.Filled.Search, contentDescription = null) },
@@ -98,7 +98,7 @@ private fun BottomBar(navController: NavHostController) {
             selected = current == Routes.Favorites,
             onClick = {
                 navController.navigate(Routes.Favorites) {
-                    popUpTo(navController.graph.findStartDestination().id); launchSingleTop = true
+                    popUpTo(navController.graph.findStartDestination().id)
                 }
             },
             icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
