@@ -35,6 +35,8 @@ class WeatherViewModel @Inject constructor(
     observeSelectedCityUseCase: ObserveSelectedCityUseCase
 ) : ViewModel() {
 
+    private val _tabIndex = MutableStateFlow(0)
+    val tabIndex: StateFlow<Int> = _tabIndex
     val city: StateFlow<SearchCity> =
         observeSelectedCityUseCase()
             .stateIn(
@@ -57,6 +59,10 @@ class WeatherViewModel @Inject constructor(
             observeIsFavoriteByIdentity(identity)
                 .collect { _isFavorite.value = it }
         }
+    }
+
+    fun setTabIndex(index: Int) {
+        _tabIndex.value = index
     }
 
     fun loadToday() {
