@@ -29,7 +29,7 @@ import com.example.weatherforecast.core.model.SearchCity
 fun SearchCityScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchCityViewModel = hiltViewModel(),
-    onCitySelected: (SearchCity) -> Unit,
+    onCitySelected: () -> Unit,
 ) {
     val query by viewModel.query.collectAsState()
     val results by viewModel.results.collectAsState()
@@ -51,7 +51,7 @@ fun SearchCityScreen(
                 items(results) { item ->
                     ResultRow(item) {
                         viewModel.onCitySelected(item)
-                        onCitySelected(item)
+                        onCitySelected()
                     }
                 }
             }

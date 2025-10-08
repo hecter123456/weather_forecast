@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
     viewModel: FavoritesViewModel = hiltViewModel(),
-    onCitySelected: (FavoriteCity) -> Unit,
+    onCitySelected: () -> Unit,
 ) {
     val favorites by viewModel.favorites.collectAsState()
     val scope = rememberCoroutineScope()
@@ -86,7 +86,7 @@ fun FavoritesScreen(
                         Row(Modifier.padding(16.dp)) {
                             Column(Modifier
                                 .weight(1f)
-                                .clickable { onCitySelected(item) }) {
+                                .clickable { onCitySelected() }) {
                                 Text(
                                     item.alias ?: item.name,
                                     style = MaterialTheme.typography.titleMedium
