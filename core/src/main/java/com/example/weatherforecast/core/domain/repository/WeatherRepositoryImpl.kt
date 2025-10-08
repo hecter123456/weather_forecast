@@ -1,7 +1,6 @@
 package com.example.weatherforecast.core.domain.repository
 
 import com.example.weatherforecast.core.datastore.datasource.PreferencesDataSource
-import com.example.weatherforecast.core.di.ApplicationScope
 import com.example.weatherforecast.core.model.DailyForecast
 import com.example.weatherforecast.core.model.FavoriteCity
 import com.example.weatherforecast.core.model.SearchCity
@@ -19,7 +18,7 @@ import javax.inject.Inject
 class WeatherRepositoryImpl @Inject constructor(
     private val datasource: WeatherNetworkDataSource,
     private val favoriteCityDao: FavoriteCityDao,
-    @ApplicationScope private val preferencesDataSource: PreferencesDataSource
+    private val preferencesDataSource: PreferencesDataSource
 ) : WeatherRepository {
 
     override suspend fun getCurrentWeather(city: SearchCity): TodayForecast {

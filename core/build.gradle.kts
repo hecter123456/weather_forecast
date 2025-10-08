@@ -22,8 +22,10 @@ android {
     namespace = "com.example.weatherforecast.core"
     compileSdk = (project.findProperty("ANDROID_COMPILE_SDK") as String).toInt()
     defaultConfig {
+        minSdk = 24
         // BuildConfig constant read by Hilt via @Named("owmApiKey")
         buildConfigField("String", "OPENWEATHER_API_KEY", "\"$openWeatherKey\"")
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     room {
@@ -54,7 +56,16 @@ dependencies {
     //datastore
     implementation(libs.androidx.dataStore.preference)
 
+    //test
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.turbine)
+    //androidTest
+    androidTestImplementation(libs.androidx.junit.ktx)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.turbine)
 }
