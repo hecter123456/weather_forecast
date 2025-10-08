@@ -3,13 +3,12 @@ package com.example.weatherforecast.feature.weather
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
@@ -51,46 +50,82 @@ fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = h
 
     }
 
-    Column(modifier) {
-        TabRow(selectedTabIndex = tabIndex) {
-            Tab(
-                selected = tabIndex == 0,
-                onClick = { viewModel.setTabIndex(0) },
-                text = { Text("Today") })
-            Tab(
-                selected = tabIndex == 1,
-                onClick = { viewModel.setTabIndex(1) },
-                text = { Text("This Week") })
+    LazyColumn(modifier = modifier) {
+        item {
+            TabRow(selectedTabIndex = tabIndex) {
+                Tab(
+                    selected = tabIndex == 0,
+                    onClick = { viewModel.setTabIndex(0) },
+                    text = { Text("Today") })
+                Tab(
+                    selected = tabIndex == 1,
+                    onClick = { viewModel.setTabIndex(1) },
+                    text = { Text("This Week") })
+            }
         }
-
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            ElevatedCard(Modifier.fillMaxWidth()) {
+        item {
+            ElevatedCard(Modifier
+                .fillMaxWidth()
+                .padding(12.dp)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("City: ${city.name}")
                     Text("Country: ${city.country}")
                     Text("State: ${city.state}")
                     Text("Lat: ${city.lat}")
                     Text("Lon: ${city.lon}")
-                    Text("isFavorite: $isFavorite")
                 }
             }
         }
 
-        when (uiState) {
-            WeatherUiState.Idle, WeatherUiState.Loading -> Box(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-            ) { CircularProgressIndicator() }
+        item {
+            when (uiState) {
+                WeatherUiState.Idle, WeatherUiState.Loading -> Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp)
+                ) { CircularProgressIndicator() }
 
-            is WeatherUiState.Error -> Text(
-                "Error: ${(uiState as WeatherUiState.Error).message}",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(16.dp)
-            )
+                is WeatherUiState.Error -> Text(
+                    "Error: ${(uiState as WeatherUiState.Error).message}",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
+                )
 
-            is WeatherUiState.Today -> TodayContent((uiState as WeatherUiState.Today))
-            is WeatherUiState.Week -> WeekContent((uiState as WeatherUiState.Week))
+                is WeatherUiState.Today -> TodayContent(
+                    (uiState as WeatherUiState.Today),
+                    viewModel,
+                    isFavorite
+                )
+
+                is WeatherUiState.Week -> WeekContent((uiState as WeatherUiState.Week))
+            }
+        }
+    }
+
+
+}
+
+@Composable
+internal fun TodayContent(
+    state: WeatherUiState.Today,
+    viewModel: WeatherViewModel,
+    isFavorite: Boolean
+) {
+    val data = state.data
+    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            "Current Day",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+        ElevatedCard(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("City: ${data.cityName.uppercase()}")
+                Text("Temp: ${data.temperatureC}°C", style = MaterialTheme.typography.headlineSmall)
+                Text("Condition: ${data.condition}")
+                Text("Wind: ${data.windKph} kph")
+                Text("Updated: ${formatDateTime(data.dateEpochSeconds.toLong())}")
+            }
         }
 
         Box(Modifier.fillMaxSize()) {
@@ -115,46 +150,21 @@ fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = h
             }
         }
     }
-
-
-}
-
-@Composable
-internal fun TodayContent(state: WeatherUiState.Today) {
-    val data = state.data
-    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(
-            "Current Day",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
-        ElevatedCard(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("City: ${data.cityName.uppercase()}")
-                Text("Temp: ${data.temperatureC}°C", style = MaterialTheme.typography.headlineSmall)
-                Text("Condition: ${data.condition}")
-                Text("Wind: ${data.windKph} kph")
-                Text("Updated: ${formatDateTime(data.dateEpochSeconds.toLong())}")
-            }
-        }
-    }
 }
 
 @Composable
 internal fun WeekContent(state: WeatherUiState.Week) {
     val list = state.data
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    Column(
+        modifier = Modifier.padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        item {
-            Text(
-                "7-Day Forecast",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        items(list) { day ->
+        Text(
+            "7-Day Forecast",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+        list.map { day ->
             ElevatedCard(Modifier.fillMaxWidth()) {
                 Row(
                     Modifier.padding(16.dp),
@@ -175,6 +185,7 @@ internal fun WeekContent(state: WeatherUiState.Week) {
                 }
             }
         }
+        Spacer(Modifier.padding(vertical = 2.dp))
     }
 }
 
