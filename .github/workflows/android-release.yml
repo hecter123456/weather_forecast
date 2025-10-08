@@ -33,6 +33,7 @@ jobs:
 
       - name: Decode signing keystore
         run: |
+          mkdir -p app
           echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 -d > signing.keystore
 
       - name: Build release bundle
