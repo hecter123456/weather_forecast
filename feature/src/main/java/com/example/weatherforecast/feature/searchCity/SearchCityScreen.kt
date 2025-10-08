@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -29,16 +30,37 @@ import com.example.weatherforecast.core.model.SearchCity
 fun SearchCityScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchCityViewModel = hiltViewModel(),
-    onCitySelected: () -> Unit,
+    onNavigateToWeather: () -> Unit,
 ) {
     val query by viewModel.query.collectAsState()
     val results by viewModel.results.collectAsState()
+    SearchCityScreen(
+        query = query,
+        results = results,
+        onQueryChange = viewModel::onQueryChange,
+        onCitySelected = viewModel::onCitySelected,
+        onNavigateToWeather = onNavigateToWeather,
+        modifier = modifier
+    )
 
+}
+
+@Composable
+internal fun SearchCityScreen(
+    query: String,
+    results: List<SearchCity>,
+    onQueryChange: (String) -> Unit,
+    onCitySelected: (SearchCity) -> Unit,
+    onNavigateToWeather: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier.padding(16.dp)) {
         OutlinedTextField(
             value = query,
-            onValueChange = { viewModel.onQueryChange(it) },
-            modifier = Modifier.fillMaxWidth(),
+            onValueChange = { onQueryChange(it) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("queryField"),
             label = { Text("Search city") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             singleLine = true
@@ -50,8 +72,8 @@ fun SearchCityScreen(
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(results) { item ->
                     ResultRow(item) {
-                        viewModel.onCitySelected(item)
-                        onCitySelected()
+                        onCitySelected(item)
+                        onNavigateToWeather()
                     }
                 }
             }

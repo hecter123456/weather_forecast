@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -18,8 +18,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,8 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.weatherforecast.core.model.SearchCity
 import com.example.weatherforecast.core.utils.formatDate
 import com.example.weatherforecast.core.utils.formatDateTime
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,24 +44,46 @@ fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = h
     val city by viewModel.city.collectAsStateWithLifecycle()
     val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
 
-    LaunchedEffect(city, tabIndex) {
-        viewModel.city.collect {
-            if (tabIndex == 0) viewModel.loadToday() else viewModel.loadWeek()
-            viewModel.startObservingFavoriteByIdentity()
-        }
+    LaunchedEffect(Unit) {
+        combine(viewModel.city, viewModel.tabIndex) { c, t -> c to t }
+            .collectLatest { (_, tab) ->
+                if (tab == 0) viewModel.loadToday() else viewModel.loadWeek()
+                viewModel.startObservingFavoriteByIdentity()
+            }
 
     }
 
+    WeatherScreen(
+        tabIndex = tabIndex,
+        uiState = uiState,
+        city = city,
+        isFavorite = isFavorite,
+        setTabIndex = viewModel::setTabIndex,
+        toggleFavorite = viewModel::toggleFavorite,
+        modifier = modifier
+    )
+}
+
+@Composable
+internal fun WeatherScreen(
+    tabIndex: Int,
+    uiState: WeatherUiState,
+    city: SearchCity,
+    isFavorite: Boolean,
+    setTabIndex: (Int) -> Unit,
+    toggleFavorite: () -> Unit,
+    modifier: Modifier
+) {
     LazyColumn(modifier = modifier) {
         item {
-            TabRow(selectedTabIndex = tabIndex) {
+            PrimaryTabRow(selectedTabIndex = tabIndex) {
                 Tab(
                     selected = tabIndex == 0,
-                    onClick = { viewModel.setTabIndex(0) },
+                    onClick = { setTabIndex(0) },
                     text = { Text("Today") })
                 Tab(
                     selected = tabIndex == 1,
-                    onClick = { viewModel.setTabIndex(1) },
+                    onClick = { setTabIndex(1) },
                     text = { Text("This Week") })
             }
         }
@@ -67,7 +92,27 @@ fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = h
                 .fillMaxWidth()
                 .padding(12.dp)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("City: ${city.name}")
+                    Row {
+                        Text("City: ${city.name}")
+                        Spacer(Modifier.weight(1f))
+                        FloatingActionButton(
+                            onClick = { toggleFavorite() },
+                            modifier = Modifier.size(24.dp, 24.dp),
+                            containerColor = if (isFavorite)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = if (isFavorite)
+                                MaterialTheme.colorScheme.onPrimary
+                            else
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                        ) {
+                            Icon(
+                                imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                                contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites"
+                            )
+                        }
+                    }
                     Text("Country: ${city.country}")
                     Text("State: ${city.state}")
                     Text("Lat: ${city.lat}")
@@ -92,7 +137,7 @@ fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = h
 
                 is WeatherUiState.Today -> TodayContent(
                     (uiState as WeatherUiState.Today),
-                    viewModel,
+                    toggleFavorite,
                     isFavorite
                 )
 
@@ -101,13 +146,12 @@ fun WeatherScreen(modifier: Modifier = Modifier, viewModel: WeatherViewModel = h
         }
     }
 
-
 }
 
 @Composable
 internal fun TodayContent(
     state: WeatherUiState.Today,
-    viewModel: WeatherViewModel,
+    toggleFavorite: () -> Unit,
     isFavorite: Boolean
 ) {
     val data = state.data
@@ -127,27 +171,9 @@ internal fun TodayContent(
             }
         }
 
-        Box(Modifier.fillMaxSize()) {
-            FloatingActionButton(
-                onClick = { viewModel.toggleFavorite() },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                containerColor = if (isFavorite)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = if (isFavorite)
-                    MaterialTheme.colorScheme.onPrimary
-                else
-                    MaterialTheme.colorScheme.onSurfaceVariant
-            ) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites"
-                )
-            }
-        }
+//        Box(Modifier.fillMaxSize()) {
+//
+//        }
     }
 }
 

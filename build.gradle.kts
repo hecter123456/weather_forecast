@@ -19,39 +19,49 @@ plugins {
 
 subprojects {
     // 1) Android model： version Java 17
-            plugins.withId("com.android.application") {
-                extensions.configure<ApplicationExtension> {
-                    compileOptions {
-                        sourceCompatibility = JavaVersion.VERSION_17
-                        targetCompatibility = JavaVersion.VERSION_17
-                    }
-                }
+    plugins.withId("com.android.application") {
+        extensions.configure<ApplicationExtension> {
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
             }
-            plugins.withId("com.android.library") {
-                extensions.configure<LibraryExtension> {
-                    compileOptions {
-                        sourceCompatibility = JavaVersion.VERSION_17
-                        targetCompatibility = JavaVersion.VERSION_17
-                    }
-                }
+            defaultConfig {
+                minSdk = 24
+                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
+        }
+    }
+    plugins.withId("com.android.library") {
+        extensions.configure<LibraryExtension> {
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
+            }
+            defaultConfig {
+                minSdk = 24
+                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+            }
+        }
+    }
 
     // 2) Kotlin（Android / JVM）to version 17（Kotlin 2.0+ DSL）
-            plugins.withId("org.jetbrains.kotlin.android") {
-                extensions.configure<KotlinAndroidProjectExtension> {
-                    jvmToolchain(17)
-                    compilerOptions {
-                        jvmTarget.set(JvmTarget.JVM_17)
-                    }
-                }
-            }
-            plugins.withId("org.jetbrains.kotlin.jvm") {
-                extensions.configure<KotlinJvmProjectExtension> {
-                    jvmToolchain(17)
-                    compilerOptions {
-                        jvmTarget.set(JvmTarget.JVM_17)
-                    }
-                }
+    plugins.withId("org.jetbrains.kotlin.android") {
+        extensions.configure<KotlinAndroidProjectExtension> {
+            jvmToolchain(17)
+            compilerOptions {
+                jvmTarget.set(JvmTarget.JVM_17)
             }
 
         }
+    }
+    plugins.withId("org.jetbrains.kotlin.jvm") {
+        extensions.configure<KotlinJvmProjectExtension> {
+            jvmToolchain(17)
+            compilerOptions {
+                jvmTarget.set(JvmTarget.JVM_17)
+            }
+
+        }
+    }
+
+}

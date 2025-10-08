@@ -9,6 +9,10 @@ plugins {
 android {
     namespace = "com.example.weatherforecast.feature"
     compileSdk = (project.findProperty("ANDROID_COMPILE_SDK") as String).toInt()
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -32,7 +36,21 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    //test
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.turbine)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.robolectric)
+    testImplementation(libs.hilt.android.testing)
+    //androidTest
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.junit.ktx)
+
 }

@@ -5,12 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherforecast.core.domain.usecase.AddFavoriteUseCase
 import com.example.weatherforecast.core.domain.usecase.GetCurrentForecastUseCase
 import com.example.weatherforecast.core.domain.usecase.GetDailyForecastUseCase
-import com.example.weatherforecast.core.domain.usecase.GetTodayForecastByCoordinatesUseCase
-import com.example.weatherforecast.core.domain.usecase.GetWeekForecastByCoordinatesUseCase
 import com.example.weatherforecast.core.domain.usecase.ObserveIsFavoriteByIdentityUseCase
 import com.example.weatherforecast.core.domain.usecase.ObserveSelectedCityUseCase
 import com.example.weatherforecast.core.domain.usecase.RemoveFavoriteByIdentityUseCase
-import com.example.weatherforecast.core.domain.usecase.ReverseGeocodeUseCase
 import com.example.weatherforecast.core.model.LocalData
 import com.example.weatherforecast.core.model.SearchCity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,9 +23,6 @@ import javax.inject.Inject
 class WeatherViewModel @Inject constructor(
     private val getToday: GetCurrentForecastUseCase,
     private val getWeek: GetDailyForecastUseCase,
-    private val getTodayAt: GetTodayForecastByCoordinatesUseCase,
-    private val getWeekAt: GetWeekForecastByCoordinatesUseCase,
-    private val reverseGeocode: ReverseGeocodeUseCase,
     private val addFavorite: AddFavoriteUseCase,
     private val observeIsFavoriteByIdentity: ObserveIsFavoriteByIdentityUseCase,
     private val removeFavoriteByIdentity: RemoveFavoriteByIdentityUseCase,
@@ -55,7 +49,7 @@ class WeatherViewModel @Inject constructor(
     fun startObservingFavoriteByIdentity() {
         favoriteObserveJob?.cancel()
         favoriteObserveJob = viewModelScope.launch {
-            val identity = city.value ?: return@launch
+            val identity = city.value
             observeIsFavoriteByIdentity(identity)
                 .collect { _isFavorite.value = it }
         }
@@ -90,7 +84,7 @@ class WeatherViewModel @Inject constructor(
 
     fun toggleFavorite() {
         viewModelScope.launch {
-            val identity = city.value ?: return@launch
+            val identity = city.value
             if (isFavorite.value) {
                 removeFavoriteByIdentity(identity)
             } else {
