@@ -15,17 +15,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.weatherforecast.navigation.Routes
 import com.example.weatherforecast.navigation.WeatherNavHost
-
-object Routes {
-    const val Forecast = "forecast"
-    const val Search = "search"
-    const val Favorites = "favorites"
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +39,7 @@ fun WeatherApp() {
 }
 
 @Composable
-private fun BottomBar(navController: NavHostController) {
+internal fun BottomBar(navController: NavHostController) {
     val backStack by navController.currentBackStackEntryAsState()
     val current = backStack?.destination?.route ?: Routes.Forecast
     NavigationBar {
@@ -54,7 +51,9 @@ private fun BottomBar(navController: NavHostController) {
                 }
             },
             icon = { Icon(Icons.Default.Cloud, contentDescription = null) },
-            label = { Text("Forecast") }
+            label = { Text("Forecast") },
+            modifier = Modifier.testTag("Forecast")
+
         )
         NavigationBarItem(
             selected = current == Routes.Search,
@@ -64,7 +63,8 @@ private fun BottomBar(navController: NavHostController) {
                 }
             },
             icon = { Icon(Icons.Filled.Search, contentDescription = null) },
-            label = { Text("Search") }
+            label = { Text("Search") },
+            modifier = Modifier.testTag("Search")
         )
         NavigationBarItem(
             selected = current == Routes.Favorites,
@@ -74,7 +74,8 @@ private fun BottomBar(navController: NavHostController) {
                 }
             },
             icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-            label = { Text("Favorites") }
+            label = { Text("Favorites") },
+            modifier = Modifier.testTag("Favorites")
         )
     }
 }

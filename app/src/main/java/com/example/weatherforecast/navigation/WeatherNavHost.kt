@@ -11,7 +11,6 @@ import androidx.navigation.compose.composable
 import com.example.weatherforecast.feature.favorite.FavoritesScreen
 import com.example.weatherforecast.feature.searchCity.SearchCityScreen
 import com.example.weatherforecast.feature.weather.WeatherScreen
-import com.example.weatherforecast.ui.Routes
 
 
 @Composable
