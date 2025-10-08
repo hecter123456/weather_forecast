@@ -30,5 +30,6 @@ interface WeatherRepository {
     // Selected City via DataStore
     fun observeSelectedCity(): Flow<SearchCity>
     suspend fun saveSelectedCity(city: SearchCity)
+    fun favoriteCityToSearchCity(favoriteCity: FavoriteCity): SearchCity
 
 }

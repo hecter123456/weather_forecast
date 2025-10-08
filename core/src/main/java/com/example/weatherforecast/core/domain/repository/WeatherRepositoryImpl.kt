@@ -73,6 +73,10 @@ class WeatherRepositoryImpl @Inject constructor(
         return preferencesDataSource.saveSelectedCity(city)
     }
 
+    override fun favoriteCityToSearchCity(favoriteCity: FavoriteCity): SearchCity {
+        return favoriteCity.toSearchCity()
+    }
+
 
     fun OneCallResponse.toToday(city: SearchCity) = TodayForecast(
         cityName = city.name,
@@ -118,6 +122,14 @@ class WeatherRepositoryImpl @Inject constructor(
         name = name,
         alias = alias,
         note = note,
+        country = country,
+        state = state,
+        lat = lat,
+        lon = lon
+    )
+
+    fun FavoriteCity.toSearchCity() = SearchCity(
+        name = name,
         country = country,
         state = state,
         lat = lat,

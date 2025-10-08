@@ -84,11 +84,15 @@ fun FavoritesScreen(
                 items(favorites, key = { it.id }) { item ->
                     ElevatedCard(Modifier.fillMaxWidth()) {
                         Row(Modifier.padding(16.dp)) {
-                            Column(Modifier
-                                .weight(1f)
-                                .clickable { onCitySelected() }) {
+                            Column(
+                                Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        viewModel.saveSelectedCity(item)
+                                        onCitySelected()
+                                    }) {
                                 Text(
-                                    item.alias ?: item.name,
+                                    "${item.name} ${item.alias?.let { "($it)" } ?: ""}",
                                     style = MaterialTheme.typography.titleMedium
                                 )
                                 val subtitle = buildString {

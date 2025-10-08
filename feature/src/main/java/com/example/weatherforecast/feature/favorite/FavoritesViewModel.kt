@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherforecast.core.domain.usecase.ObserveFavoritesUseCase
 import com.example.weatherforecast.core.domain.usecase.RemoveFavoriteUseCase
+import com.example.weatherforecast.core.domain.usecase.SaveSelectedFavoriteCityUseCase
 import com.example.weatherforecast.core.domain.usecase.UpdateFavoriteUseCase
 import com.example.weatherforecast.core.model.FavoriteCity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class FavoritesViewModel @Inject constructor(
     observeFavorites: ObserveFavoritesUseCase,
     private val removeFavoriteUseCase: RemoveFavoriteUseCase,
-    private val updateFavoriteUseCase: UpdateFavoriteUseCase
+    private val updateFavoriteUseCase: UpdateFavoriteUseCase,
+    private val saveSelectedCityUseCase: SaveSelectedFavoriteCityUseCase
 ) : ViewModel() {
 
     val favorites: StateFlow<List<FavoriteCity>> = observeFavorites()
@@ -26,5 +28,11 @@ class FavoritesViewModel @Inject constructor(
     fun delete(id: Long) = viewModelScope.launch { removeFavoriteUseCase(id) }
     fun update(id: Long, alias: String?, note: String?) = viewModelScope.launch {
         updateFavoriteUseCase(id, alias, note)
+    }
+
+    fun saveSelectedCity(favoriteCity: FavoriteCity) {
+        viewModelScope.launch {
+            saveSelectedCityUseCase(favoriteCity)
+        }
     }
 }
