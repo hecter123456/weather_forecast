@@ -30,9 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.example.weatherforecast.core.utils.formatDate
+import com.example.weatherforecast.core.utils.formatDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -188,9 +187,3 @@ internal fun WeekContent(state: WeatherUiState.Week) {
         Spacer(Modifier.padding(vertical = 2.dp))
     }
 }
-
-private fun formatDate(epochSec: Long): String =
-    SimpleDateFormat("EEE, MMM d", Locale.getDefault()).format(Date(epochSec * 1000))
-
-private fun formatDateTime(epochSec: Long): String =
-    SimpleDateFormat("MMM d, HH:mm", Locale.getDefault()).format(Date(epochSec * 1000))
