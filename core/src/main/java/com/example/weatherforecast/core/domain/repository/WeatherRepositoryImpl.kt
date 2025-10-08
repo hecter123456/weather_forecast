@@ -2,10 +2,8 @@ package com.example.weatherforecast.core.domain.repository
 
 import com.example.weatherforecast.core.datastore.datasource.PreferencesDataSource
 import com.example.weatherforecast.core.di.ApplicationScope
-import com.example.weatherforecast.core.model.City
 import com.example.weatherforecast.core.model.DailyForecast
 import com.example.weatherforecast.core.model.FavoriteCity
-import com.example.weatherforecast.core.model.LocalData
 import com.example.weatherforecast.core.model.SearchCity
 import com.example.weatherforecast.core.model.TodayForecast
 import com.example.weatherforecast.core.network.datasource.WeatherNetworkDataSource
@@ -23,9 +21,6 @@ class WeatherRepositoryImpl @Inject constructor(
     private val favoriteCityDao: FavoriteCityDao,
     @ApplicationScope private val preferencesDataSource: PreferencesDataSource
 ) : WeatherRepository {
-    override suspend fun getCities(): List<City> {
-        return LocalData.cities
-    }
 
     override suspend fun getCurrentWeather(city: SearchCity): TodayForecast {
         return datasource.fetchOneCall(request = OneCallRequest(lat = city.lat, lon = city.lon))

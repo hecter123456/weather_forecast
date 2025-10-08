@@ -7,7 +7,6 @@ import javax.inject.Inject
 
 class GetDailyForecastUseCase @Inject constructor(private val repo: WeatherRepository) {
     suspend operator fun invoke(city: SearchCity): List<DailyForecast?> {
-        val cities = repo.getCities()
         return repo.getDailyWeather(city)
     }
 }

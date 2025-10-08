@@ -1,6 +1,5 @@
 package com.example.weatherforecast.core.domain.repository
 
-import com.example.weatherforecast.core.model.City
 import com.example.weatherforecast.core.model.DailyForecast
 import com.example.weatherforecast.core.model.FavoriteCity
 import com.example.weatherforecast.core.model.SearchCity
@@ -9,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface WeatherRepository {
-    suspend fun getCities(): List<City>
     suspend fun getCurrentWeather(city: SearchCity): TodayForecast
 
     suspend fun getDailyWeather(city: SearchCity): List<DailyForecast?>
