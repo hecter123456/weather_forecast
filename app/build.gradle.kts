@@ -10,6 +10,18 @@ android {
     namespace = "com.example.weatherforecast"
     compileSdk = (project.findProperty("ANDROID_COMPILE_SDK") as String).toInt()
 
+    signingConfigs {
+        create("releaseConfig") {
+            val storeFilePath = System.getenv("SIGNING_STORE_FILE") ?: ""
+            if (storeFilePath.isNotBlank()) {
+                storeFile = file(storeFilePath)
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            }
+        }
+    }
+
     defaultConfig {
         applicationId = "com.example.weatherforecast"
         minSdk = 24
@@ -24,7 +36,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("releaseConfig")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -39,6 +52,7 @@ android {
 dependencies {
     //include feature dependencies
     implementation(project(":feature"))
+    implementation(project(":core"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
