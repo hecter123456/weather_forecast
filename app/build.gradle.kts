@@ -12,7 +12,7 @@ android {
 
     signingConfigs {
         create("releaseConfig") {
-            val storeFilePath = System.getenv("SIGNING_STORE_FILE") ?: "app/signing.keystore"
+            val storeFilePath = "signing.keystore"
             val fromRoot = rootProject.file(storeFilePath)
             if (fromRoot.exists()) {
                 storeFile = fromRoot
