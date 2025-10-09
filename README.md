@@ -19,11 +19,10 @@ Built with:
 - [Requirements](#requirements)
 - [Quick Start](#quick-start)
 - [Provide API keys (`local.properties`)](#provide-api-keys-localproperties)
-  - [OpenWeatherMap (`OWM_API_KEY`)](#openweathermap-owm_api_key)
+    - [OpenWeatherMap (`OPENWEATHER_API_KEY`)](#openweathermap-openweather_api_key)
 - [Build & Run](#build--run)
 - [Testing](#testing)
 - [CI/CD (GitHub Actions)](#cicd-github-actions)
-- [License](#license)
 
 ---
 
@@ -122,19 +121,20 @@ android {
 object ApiKeyModule {
     @Provides
     @Named("owmApiKey")
-    fun provideOwmApiKey(): String = BuildConfig.OWM_API_KEY
+    fun provideOwmApiKey(): String = BuildConfig.OPENWEATHER_API_KEY
 }
 ```
 
 **Usage in data source**
 
 ```kotlin
-class WeatherNetworkDataSourceImpl @Inject constructor(
-    private val api: OpenWeatherApi,
-    @Named("owmApiKey") private val apiKey: String
-) : WeatherNetworkDataSource {
-    // pass apiKey to Retrofit calls…
-}
+// pass apiKey to Retrofit calls…
+@Provides
+@Singleton
+fun provideDataSource(
+    api: OpenWeatherApi,
+    @Named("owmApiKey") apiKey: String
+): WeatherNetworkDataSource = WeatherNetworkDataSourceImpl(api, apiKey)
 ```
 
 ---
