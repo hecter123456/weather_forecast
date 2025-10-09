@@ -26,10 +26,25 @@ jobs:
 
       - name: Write local.properties (API keys)
         run: |
-          cat > local.properties <<'EOF'
-          OWM_API_KEY=${{ secrets.OWM_API_KEY }}
-          # MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}
-          EOF
+          printf "OWM_API_KEY=%s\n" "${{ secrets.OWM_API_KEY }}" > local.properties
+
+      - name: Verify local.properties exists
+        run: |
+          ls -la
+          test -s local.properties || (echo "local.properties missing or empty" && exit 1)
+
+      - name: Mask API key values
+        run: |
+          OWM=$(awk -F= '/^OWM_API_KEY=/{print $2}' local.properties)
+          [ -n "$OWM" ] && echo "::add-mask::$OWM"
+
+      - name: Validate API keys presence (length only)
+        run: |
+          awk -F= '
+            BEGIN{rc=0}
+            $1=="OWM_API_KEY"{ if (length($2)>10) print "OWM_API_KEY OK (len=" length($2) ")"; else { print "OWM_API_KEY missing/too short"; rc=1 } }
+            END{exit rc}
+          ' local.properties
 
       - name: Decode signing keystore
         run: |
