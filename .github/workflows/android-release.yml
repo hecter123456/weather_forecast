@@ -26,7 +26,7 @@ jobs:
 
       - name: Write local.properties (API keys)
         run: |
-          printf "\nOWM_API_KEY=%s\n" "${{ secrets.OWM_API_KEY }}" > local.properties
+          printf "\nOPENWEATHER_API_KEY=%s\n" "${{ secrets.OWM_API_KEY }}" > local.properties
 
       - name: Verify local.properties exists
         run: |
@@ -35,14 +35,14 @@ jobs:
 
       - name: Mask API key values
         run: |
-          OWM=$(awk -F= '/^OWM_API_KEY=/{print $2}' local.properties)
+          OWM=$(awk -F= '/^OPENWEATHER_API_KEY=/{print $2}' local.properties)
           [ -n "$OWM" ] && echo "::add-mask::$OWM"
 
       - name: Validate API keys presence (length only)
         run: |
           awk -F= '
             BEGIN{rc=0}
-            $1=="OWM_API_KEY"{ if (length($2)>10) print "OWM_API_KEY OK (len=" length($2) ")"; else { print "OWM_API_KEY missing/too short"; rc=1 } }
+            $1=="OPENWEATHER_API_KEY"{ if (length($2)>10) print "OPENWEATHER_API_KEY OK (len=" length($2) ")"; else { print "OPENWEATHER_API_KEY missing/too short"; rc=1 } }
             END{exit rc}
           ' local.properties
 
