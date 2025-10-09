@@ -84,30 +84,32 @@ root
 
 > `local.properties` is **not** committed to VCS. It’s ideal for local secrets.
 
-### OpenWeatherMap (`OWM_API_KEY`)
+### OpenWeatherMap (`OPENWEATHER_API_KEY`)
 
 1. Open (or create) `local.properties` in the **project root**.
 2. Add your key:
    ```properties
-   OWM_API_KEY=YOUR_OWM_API_KEY_HERE
+   OPENWEATHER_API_KEY=YOUR_OWM_API_KEY_HERE
    ```
 3. Ensure the app exposes this value to `BuildConfig` and DI.
 
-**Gradle (e.g., `app/build.gradle.kts` or `feature/build.gradle.kts`)**
+**Gradle (e.g., `core/build.gradle.kts`)**
 
 ```kotlin
 import java.util.Properties
 
-val props = Properties().apply {
+val localProps = Properties().apply {
     val f = rootProject.file("local.properties")
-    if (f.exists()) load(f.inputStream())
+    if (f.exists()) f.inputStream().use { load(it) }
 }
-val owmKey = (props.getProperty("OWM_API_KEY") ?: "").trim()
+val openWeatherKey = (localProps.getProperty("OPENWEATHER_API_KEY")
+    ?: System.getenv("OPENWEATHER_API_KEY")
+    ?: "")
 
 android {
     defaultConfig {
         // Expose as BuildConfig so it can be injected
-        buildConfigField("String", "OWM_API_KEY", ""$owmKey"")
+        buildConfigField("String", "OPENWEATHER_API_KEY", "\"$openWeatherKey\"")
     }
 }
 ```
